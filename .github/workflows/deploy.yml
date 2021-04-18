@@ -19,8 +19,8 @@ jobs:
           echo "$SSH" > ansible/wl.pem
           chmod 400 ansible/wl.pem
           cat ansible/wl.pem
-          echo "$PRIVATE_KEY" > id_rsa
-          cat id_rsa
+          echo "$PRIVATE_KEY" > ansible/id_rsa
+          cat ansible/id_rsa
                       
     - name: Run Ansible-playbook
       uses: saubermacherag/ansible-playbook-docker-action@v1.3
