@@ -1,0 +1,32 @@
+name: Ansible Playbook
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run-playbooks:
+    runs-on: ubuntu-latest  
+    steps:
+    - name: Git Clone repo
+      uses: actions/checkout@v1
+       
+    - id: host
+      env:
+        SSH: ${{ secrets.KEY }}
+      run: |
+          echo "$SSH" > ansible/wl.pem
+          chmod 400 ansible/wl.pem
+          cat ansible/wl.pem
+    
+    - name: List current folder
+      run: |
+        pwd
+        ls -l
+             
+    - name: Run Ansible-playbook
+      uses: saubermacherag/ansible-playbook-docker-action@v1.3
+      with:
+        playbookName: 'ansible/lesson12.yml'
+        inventoryFile: 'ansible/hosts'
+        keyFile: "ansible/wl.pem"
