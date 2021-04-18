@@ -88,7 +88,7 @@
   - name:  Deploy code from GitHub repositories
     git:
         repo: https://github.com/wl-pr/lesson-12.git
-        version: master
+        version: main
         dest: "{{ditrid_path}}"
         force: yes
 
