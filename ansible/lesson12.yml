@@ -1,0 +1,112 @@
+---
+
+- hosts: my_hosts
+
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  vars:
+    ditrid_path: "/home/jenkins"
+    image: wl-pr/lesson12
+    container: my_jenkins
+
+  tasks:
+
+  - name:  update package
+    apt:
+      update_cache: yes
+
+  - name: install package
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+      state: present
+      update_cache: yes
+
+  - name: install GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+
+  - name: add docker url
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+      state: present
+      filename: docker
+      update_cache: yes
+
+  - name:  update package
+    apt:
+      update_cache: yes
+
+  - name: install docker-ce
+    apt:
+      name: docker-ce
+      state: present
+      update_cache: yes
+
+  - name: strart docker
+    systemd:
+      name: docker
+      state: started
+      enabled: yes
+  - name:  update package
+    apt:
+      update_cache: yes
+
+  - name: installing docker SDK
+    apt:
+      name: python3-pip
+      state: present
+
+
+  - name: python docker and docker-compse module
+    pip:
+      name:
+        - docker
+
+  - name:  update package
+    apt:
+      update_cache: yes
+
+  - name: remove container
+    docker_container:
+      name: "{{container}}"
+      state: absent
+
+  - name: Remove image
+    docker_image:
+      state: absent
+      name: "{{image}}"
+      tag: latest
+
+
+  - name:  Deploy code from GitHub repositories
+    git:
+        repo: https://github.com/wl-pr/lesson-2.git
+        version: master
+        dest: "{{ditrid_path}}"
+        force: yes
+
+  - name: Build an image and push it to a private repo
+    docker_image:
+       name: "{{image}}"
+       build:
+         path: "{{ditrid_path}}"
+         pull: yes
+       source: build
+       state: present
+       tag: latest
+
+  - name: Restart a container
+    docker_container:
+      name: my_jenkins
+      image: wl-pr/lesson12:latest
+      state: started
+      restart: yes
+      ports:
+        - "80:80"
