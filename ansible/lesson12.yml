@@ -96,7 +96,7 @@
   - name:  Deploy code from GitHub repositories
     git:
         repo: ssh://git@github.com/wl-pr/lesson-12.git
-        key_file: "{{key}}
+        key_file: "{{key}}"
         version: main
         dest: "{{ditrid_path}}"
         force: yes
