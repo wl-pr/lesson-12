@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  run-playbooks:
+  run-deploy:
     runs-on: ubuntu-latest  
     steps:
     - name: Git Clone repo
@@ -14,16 +14,14 @@ jobs:
     - id: host
       env:
         SSH: ${{ secrets.KEY }}
+        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
           echo "$SSH" > ansible/wl.pem
           chmod 400 ansible/wl.pem
           cat ansible/wl.pem
-    
-    - name: List current folder
-      run: |
-        pwd
-        ls -l
-             
+          echo "$PRIVATE_KEY" > id_rsa
+          cat id_rsa
+                      
     - name: Run Ansible-playbook
       uses: saubermacherag/ansible-playbook-docker-action@v1.3
       with:
